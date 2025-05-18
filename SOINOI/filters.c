@@ -1,5 +1,13 @@
 #include <math.h>
+#include "signals.h"
+#include "mcbsp.h"
+#include "filters.h"
+#include <csl.h>
+#include <csl_irq.h>
+#include <stdio.h>
 #define PI 3.1415926535897932384626433832795028841971693993751058209
+
+
 
 float a[5];
 float b[128];
@@ -19,7 +27,7 @@ void reset_ab()
 void reset_x()
 {
 	int i=0;
-	for(i=0;i<8192;i++)
+	for(i=0;i<16384;i++)
 		x[i]=0;
 }
 
@@ -82,6 +90,8 @@ float IIR(float xx)
 }
 float echo(float xx)
 {
+	x[p]=xx;
+	xx=0.8*x[p]+0.2*x[(p-8190)&8191];
+	p=(p+1)&8191;
 	return xx;
 }
-

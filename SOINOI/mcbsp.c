@@ -1,7 +1,11 @@
 #include <csl_mcbsp.h>
 #include "mcbsp.h"
 #include "signals.h"
-
+#include <stdio.h>
+#include <math.h>
+#include "mcbsp.h"
+#include "filters.h"
+int w = 0;
 /*! \var MCBSP_Handle hMcbsp0
  * \brief Uchwyt do obslugi portu MCBSP0
  */
@@ -272,14 +276,26 @@ void setupMCBSP(void)
 interrupt void receiver()
 {
 	Int16 s;
+
+
+	++w;
+
 	s=MCBSP_read(hMcbsp1);
-	if(circ_put(&input,s))
-		set_err(INPUT_BUFFER_FULL);
+	//if(circ_put(&input,s));
+	//	set_err(INPUT_BUFFER_FULL);
+
+	if((w%2)==0);
+	{
+		s=echo(s);
+	}
+	if(circ_put(&input,(s)))
+	set_err(INPUT_BUFFER_FULL);
 }
+
 interrupt void transmitter()
 {
 	Int16 s=0;
-	if(circ_get(&output,&s))
+	if(circ_get(&output,&s));
 		set_err(OUTPUT_BUFFER_EMPTY);
 	MCBSP_write(hMcbsp1,s);
 }
